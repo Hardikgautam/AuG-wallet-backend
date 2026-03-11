@@ -55,8 +55,16 @@ public class Customer {
 	String password;
 	private LocalDate registerationDate;
 	
+	@Builder.Default
 	@OneToMany(targetEntity=Account.class,mappedBy="customer")
-	private List<Account> accounts=new ArrayList();
+	private List<Account> accounts =new ArrayList();
+	
+	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+	private List<CustomerDocuments_Path> documents;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name="subscriptionFk")
+	Subscription subscription;
 	
 	
 }

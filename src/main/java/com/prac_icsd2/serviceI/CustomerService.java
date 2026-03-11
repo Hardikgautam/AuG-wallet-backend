@@ -5,7 +5,9 @@ import java.util.List;
 import jakarta.validation.Valid;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.prac_icsd2.dto.BulkUploadResultDTO;
 import com.prac_icsd2.dto.CustomerLoginDTO;
 import com.prac_icsd2.dto.CustomerRequestDto;
 import com.prac_icsd2.dto.response.CustomerFnmLnmGenderDTO;
@@ -40,6 +42,8 @@ public interface CustomerService {
     Customer getCustomerByCustomerId(int strCustomerId);
 
     List<Customer> getCustomerExpiringTodayOrTomorrow();
+    
+    BulkUploadResultDTO bulkCreateCustomers(MultipartFile file);
 
 //    InputStreamResource CreateSampleSheet() throws IOException;
 //
