@@ -1,18 +1,20 @@
 package com.prac_icsd2.dto;
 
 import com.prac_icsd2.enums.Gender;
+import com.prac_icsd2.enums.SubscriptionType;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CustomerRequestDto {
 
 //	@NotBlank(message = "First name should not be blank")
@@ -57,13 +59,17 @@ public class CustomerRequestDto {
 	//@NotBlank(message = "pincode name should not be blank")
 	@NotNull(message="pincode name should not be null")
 	private String pincode;
+	
+	
+	private SubscriptionType subscriptionType;
+	
 	@Override
 	public String toString() {
 		return "CustomerRequestDto [firstName=" + firstName + ", lastName=" + lastName + ", emailId=" + emailId
 				+ ", contactNo=" + contactNo + ", gender=" + gender + ", password=" + password +  ", addressLine1=" + addressLine1 + ", addressLine2=" + addressLine2 + ", city="
 				+ city + ", State=" + state + ", pincode=" + pincode + "]";
 	}
-		
+
 	
 	
 	

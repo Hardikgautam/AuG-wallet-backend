@@ -1,18 +1,14 @@
 package com.prac_icsd2.model;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-import com.prac_icsd2.enums.Gender;
+
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

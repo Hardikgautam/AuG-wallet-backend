@@ -14,7 +14,6 @@ import com.prac_icsd2.dto.common.ApiResponse;
 import com.prac_icsd2.model.TransactionModel;
 import com.prac_icsd2.serviceI.TransactionService;
 
-import jakarta.transaction.Transaction;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

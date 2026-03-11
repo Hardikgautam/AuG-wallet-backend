@@ -83,7 +83,7 @@ public class TransactionServiceImpl implements TransactionService{
 	//int accountNumber = trans.getAccountnumber();
 		
 		Account fromacc=ar.findById(trans.getFromAccount().getAccountnumber()).orElseThrow(()->new  RuntimeException("From Account not found"));
-		Account toacc=ar.findById(trans.getToAccount().getAccountnumber()).orElseThrow(()->new  RuntimeException("To Account not found"));
+		//Account toacc=ar.findById(trans.getToAccount().getAccountnumber()).orElseThrow(()->new  RuntimeException("To Account not found"));
 		//Account acc = as.getAccountByAccNumber(accountNumber);
 		
 		TransactionModel tra = TransactionModel.builder()
@@ -110,7 +110,7 @@ public class TransactionServiceImpl implements TransactionService{
 	public TransactionModel depositAmountInAccount(TransactionDepositRequestDTO trans) {
 	//int accountNumber = trans.getAccountnumber();
 		
-		Account fromacc=ar.findById(trans.getFromAccount().getAccountnumber()).orElseThrow(()->new  RuntimeException("From Account not found"));
+		//Account fromacc=ar.findById(trans.getFromAccount().getAccountnumber()).orElseThrow(()->new  RuntimeException("From Account not found"));
 		Account toacc=ar.findById(trans.getToAccount().getAccountnumber()).orElseThrow(()->new  RuntimeException("To Account not found"));
 		//Account acc = as.getAccountByAccNumber(accountNumber);
 		

@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.prac_icsd2.dto.BulkUploadResultDTO;
 import com.prac_icsd2.dto.CustomerLoginDTO;
 import com.prac_icsd2.dto.CustomerRequestDto;
 import com.prac_icsd2.dto.common.ApiResponse;
@@ -37,7 +40,8 @@ public class CustController {
 	CustomerService customerService;
 	
 	  
-	  @GetMapping(value="/create") public Customer createcustomer() { Address addr = Address.builder() 
+	  @GetMapping(value="/create") public Customer createcustomer() {
+		  	Address addr = Address.builder() 
 			  .addressid(3) 
 			  .addressline1("Ram Nagar Gali NO.3")
 			  .addressline2("Jatal Road")
@@ -181,6 +185,18 @@ public class CustController {
 		ApiResponse apiresponse=new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
 		
 		return new ResponseEntity<>(apiresponse,HttpStatus.OK);
+	}
+	
+	@PostMapping(value="/bulk-upload", consumes="multipart/form-data")
+	public ResponseEntity<ApiResponse> bulkUpload(@RequestParam("file") MultipartFile file) {
+	    if (file.isEmpty() || !file.getOriginalFilename().endsWith(".xlsx")) {
+	        return new ResponseEntity<>(new ApiResponse(400, "Please upload a valid .xlsx file"), HttpStatus.BAD_REQUEST);
+	    }
+	    
+	    BulkUploadResultDTO result = customerService.bulkCreateCustomers(file);
+	    String msg = "Processing complete. Success: " + result.getSuccessCount() + ", Failed: " + result.getFailureCount();
+	    
+	    return new ResponseEntity<>(new ApiResponse(200, msg, result), HttpStatus.OK);
 	}
 
 	

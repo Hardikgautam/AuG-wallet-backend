@@ -1,39 +1,48 @@
 package com.prac_icsd2.model;
 
-import java.util.Date;
+import java.time.LocalDate;
+
+import com.prac_icsd2.enums.DocType;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-@Entity
-public class CustomerDocuments {
-
+@Builder
+@Table(name="DOCUMENTS")
+public class CustomerDocuments{
+	
 	@Id
-	@GeneratedValue
-	private int documentuploadid;
-	private String UploadedDocumentspath;
+	@GeneratedValue(strategy=GenerationType.SEQUENCE,generator="docGen")
+	@SequenceGenerator(name="docGen",sequenceName="DOCSEQ",allocationSize=1)
+	private int documentId;
+		
+	private DocType documentName;
+	
+	private String filetype;
+	
+	private LocalDate uploadDate;
+	
 	
 	@OneToOne
-	@JoinColumn
-	private Customer custid;
-	private Date uploaddate;
-	private String filename;
+	@JoinColumn(name="customeridfk")
+	private Customer customer;
 	
-	 public CustomerDocuments(String uploadedDocumentspath, Customer custid, Date uploaddate, String filename) {
-	        super();
-	        UploadedDocumentspath = uploadedDocumentspath;
-	        this.custid = custid;
-	        this.uploaddate = uploaddate;
-	        this.filename = filename;
-	    }
-
+	@Lob
+	private byte[] filedata;
+	
 }

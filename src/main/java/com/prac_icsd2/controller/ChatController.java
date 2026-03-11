@@ -3,7 +3,6 @@ package com.prac_icsd2.controller;
 import java.util.Map;
 
 import org.springframework.ai.chat.model.ChatModel; // Generic interface
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +20,6 @@ public class ChatController {
 
     private final ChatModel chatModel;
 
-    @Autowired
     public ChatController(ChatModel chatModel) {
         this.chatModel = chatModel;
     }

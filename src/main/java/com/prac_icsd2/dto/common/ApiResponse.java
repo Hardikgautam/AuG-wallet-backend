@@ -1,12 +1,16 @@
 package com.prac_icsd2.dto.common;
 
-import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class ApiResponse {
 
@@ -17,42 +21,13 @@ public class ApiResponse {
 	
 	private String message;
 	
-	public ApiResponse()
-	{
-		this.timestamp=LocalDateTime.now();
-	}
-	
 	private Object data;
-	public ApiResponse(Integer code, String message, Object data) {
-		
-		this();
-		this.code = code;
-		this.message = message;
-		this.data = data;
-	}
-	public ApiResponse(Integer code, String message) {
-		
-		this();
-		this.code = code;
-		this.message = message;
-	}
 	
-	
-	 
-
-	 
-	 
-	 
-	 
-	 @JsonFormat(shape=JsonFormat.Shape.STRING,pattern="dd-MM-yyyy hh:mm:ss")
-	 private LocalDateTime timestamp=LocalDateTime.now();
-
-	@Override
-	public String toString() {
-		return "ApiResponse [code=" + code + ", message=" + message + ", timestamp=" + timestamp + ", data=" + data + "]";
-	}
-
-
+    public ApiResponse(int code, String message) {
+        this.code = code;
+        this.message = message;
+        this.data = null;
+    } 
 	
 	
 }
