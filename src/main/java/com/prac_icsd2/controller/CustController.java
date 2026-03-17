@@ -86,11 +86,14 @@ public class CustController {
         ApiResponse apiresponse = new ApiResponse(HttpStatus.OK.value(), "user is validated", res);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
-///////pagination 
+///////   ///      ///////////   //       //
+///       ///      //       //  //       //
+///       ///      //      //  //  //   //
+///       ///      //     //  //  //   //
+///////   ///////  ////////  ///////////
 /// 
 /// 
 /// 
-    
     
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllCustomers(
