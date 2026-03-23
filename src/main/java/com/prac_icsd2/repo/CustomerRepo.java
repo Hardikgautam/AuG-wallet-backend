@@ -30,31 +30,25 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer> {
     List<CustomerFnmLnmGenderDTO> findByLastName(String lnm);
     Boolean existsByEmailIdAndPassword(String email, String password);
 
-    List<Customer> findBySubscription_PlanExpiryDateAndSubscription_SubscriptionTypeNot(LocalDate date, SubscriptionType type);
-    List<Customer> findBySubscription_PlanExpiryDateBeforeAndSubscription_SubscriptionTypeNot(LocalDate date, SubscriptionType type);
+    List<Customer> findBySubscription_PlanExpiryDateAndSubscription_SubscriptionTypeNot(
+            LocalDate date, SubscriptionType type);
+    List<Customer> findBySubscription_PlanExpiryDateBeforeAndSubscription_SubscriptionTypeNot(
+            LocalDate date, SubscriptionType type);
 
-    
-    
     @Query("SELECT DISTINCT c FROM Customer c " +
            "LEFT JOIN FETCH c.accounts " +
            "LEFT JOIN FETCH c.address " +
            "LEFT JOIN FETCH c.subscription " +
+           "LEFT JOIN FETCH c.documents "+
            "WHERE c.customerId = :id")
     Optional<Customer> findByIdWithAllDetails(@Param("id") Integer id);
 
-    
-    
-    
-    
-    
-    
-    
-    
+  
     @Query("SELECT c FROM Customer c LEFT JOIN c.address a " +
-           "WHERE (:search IS NULL OR :search = '' OR " +
-           "LOWER(c.firstName) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(c.lastName)  LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(c.emailId)   LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(c.contactNo) LIKE LOWER(CONCAT('%', :search, '%')))")
+           "WHERE (:search IS NULL OR " +
+           "LOWER(c.firstName) LIKE LOWER(CONCAT(:search, '%')) OR " +
+           "LOWER(c.lastName)  LIKE LOWER(CONCAT(:search, '%')) OR " +
+           "LOWER(c.emailId)   LIKE LOWER(CONCAT(:search, '%')) OR " +
+           "LOWER(c.contactNo) LIKE LOWER(CONCAT(:search, '%')))")
     Page<Customer> findAllWithSearch(@Param("search") String search, Pageable pageable);
 }

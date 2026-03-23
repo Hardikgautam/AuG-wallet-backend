@@ -1,9 +1,11 @@
 package com.prac_icsd2.model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prac_icsd2.enums.Gender;
 
 import jakarta.persistence.CascadeType;
@@ -57,10 +59,11 @@ public class Customer {
 	
 	@Builder.Default
 	@OneToMany(targetEntity=Account.class,mappedBy="customer")
-	private List<Account> accounts =new ArrayList();
+	private Set<Account> accounts =new HashSet<>();
+	
 	
 	@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-	private List<CustomerDocuments_Path> documents;
+	private Set<CustomerDocuments_Path> documents;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name="subscriptionFk")

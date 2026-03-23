@@ -19,7 +19,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @Entity
@@ -40,6 +42,8 @@ public class Account {
 	 @ManyToOne
 	 @JoinColumn(name="customerFk")
 	 @JsonIgnore
+	 @ToString.Exclude          
+	 @EqualsAndHashCode.Exclude
 	 private Customer customer;
 	 @Column
 	 @Enumerated(EnumType.STRING) 

@@ -26,7 +26,7 @@ public class WelcomeEmailSchedulerService {
 	@Autowired
 	private Scheduler scheduler;
 	
-	@Value("${app.welcome.email.delay-minutes:20}")
+	@Value("${app.welcome.email.delay-minutes:1}")
 	private int delayMinutes;
 	
 	public void scheduleWelcomeEmail(String toEmail,String name, SubscriptionType subscriptionType, LocalDate startDate , LocalDate expiryDate) {

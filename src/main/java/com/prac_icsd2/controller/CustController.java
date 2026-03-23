@@ -11,15 +11,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.prac_icsd2.aop.TrackMethod;
 import com.prac_icsd2.dto.BulkUploadResultDTO;
 import com.prac_icsd2.dto.CustomerLoginDTO;
 import com.prac_icsd2.dto.CustomerRequestDto;
@@ -27,8 +30,10 @@ import com.prac_icsd2.dto.common.ApiResponse;
 import com.prac_icsd2.dto.response.CustomerFnmLnmGenderDTO;
 import com.prac_icsd2.dto.response.CustomerPageResponseDTO;
 import com.prac_icsd2.enums.Gender;
+import com.prac_icsd2.exception.ResourceNotFoundException;
 import com.prac_icsd2.model.Address;
 import com.prac_icsd2.model.Customer;
+import com.prac_icsd2.repo.CustomerRepo;
 import com.prac_icsd2.serviceI.CustomerService;
 
 import jakarta.validation.Valid;
@@ -44,6 +49,9 @@ public class CustController {
 
     @Autowired
     CustomerService customerService;
+
+    @Autowired
+    CustomerRepo customerRepo;
 
     @GetMapping(value = "/create")
     public Customer createcustomer() {
@@ -81,38 +89,70 @@ public class CustController {
 
     @PostMapping(value = "/isValidUser")
     public ResponseEntity<ApiResponse> isValidUser(@RequestBody @Valid CustomerLoginDTO customerLogin) {
-        log.info("authenticating user - valid or not ");
+        log.info("authenticating user - valid or not");
         boolean res = customerService.isValidCustByEmailidAndPwd(customerLogin);
         ApiResponse apiresponse = new ApiResponse(HttpStatus.OK.value(), "user is validated", res);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
-///////   ///      ///////////   //       //
-///       ///      //       //  //       //
-///       ///      //      //  //  //   //
-///       ///      //     //  //  //   //
-///////   ///////  ////////  ///////////
-/// 
-/// 
-/// 
-    
+
+  
     @GetMapping("/all")
     public ResponseEntity<ApiResponse> getAllCustomers(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "firstName") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir,
-            @RequestParam(defaultValue = "") String search) {
+            @RequestParam(required = false) String search) {
 
-        log.info("getAllCustomers using pagination with default values " + page, size, sortBy, sortDir, search);
+        log.info("getAllCustomers page={} size={} sortBy={} sortDir={} search={}",
+                 page, size, sortBy, sortDir, search);
 
-        Page<CustomerPageResponseDTO> result = customerService.getAllCustomers(page, size, sortBy, sortDir, search);
+        Page<CustomerPageResponseDTO> result =
+                customerService.getAllCustomers(page, size, sortBy, sortDir, search);
 
         if (result.isEmpty()) {
-            ApiResponse apiResponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "No customers found");
-            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+            ApiResponse apiResponse = new ApiResponse(HttpStatus.OK.value(), "No customers found", result);
+            return new ResponseEntity<>(apiResponse, HttpStatus.OK);
         }
 
         ApiResponse apiResponse = new ApiResponse(HttpStatus.OK.value(), "Customers fetched successfully", result);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @TrackMethod
+    @GetMapping("/getById/{id}")
+    public ResponseEntity<ApiResponse> getCustomerById(@PathVariable Integer id) {
+        log.info("getCustomerById id={}", id);
+        Customer customer = customerRepo.findByIdWithAllDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.OK.value(), "Customer found", customer);
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ApiResponse> updateCustomer(
+            @PathVariable Integer id,
+            @RequestBody CustomerRequestDto dto) {
+        log.info("updateCustomer id={}", id);
+        Customer existing = customerRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found: " + id));
+        existing.setFirstName(dto.getFirstName());
+        existing.setLastName(dto.getLastName());
+        existing.setEmailId(dto.getEmailId());
+        existing.setContactNo(dto.getContactNo());
+        customerRepo.save(existing);
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.OK.value(), "Customer updated successfully");
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable Integer id) {
+        log.info("deleteCustomer id={}", id);
+        if (!customerRepo.existsById(id)) {
+            throw new ResourceNotFoundException("Customer not found: " + id);
+        }
+        customerRepo.deleteById(id);
+        ApiResponse apiResponse = new ApiResponse(HttpStatus.OK.value(), "Customer deleted successfully");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -121,10 +161,10 @@ public class CustController {
         log.info("inside controller findByLastName lnm=" + lnm);
         List<CustomerFnmLnmGenderDTO> lst = customerService.findByLastName(lnm);
         if (lst.isEmpty()) {
-            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found ");
+            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found");
             return new ResponseEntity<>(apiresponse, HttpStatus.NOT_FOUND);
         }
-        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
+        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found", lst);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
@@ -133,10 +173,10 @@ public class CustController {
         log.info("inside controller findByFirstNameIgnoreCase fn=" + fn);
         List<Customer> lst = customerService.findByFirstNameIgnoreCase(fn);
         if (lst.isEmpty()) {
-            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found ");
+            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found");
             return new ResponseEntity<>(apiresponse, HttpStatus.NOT_FOUND);
         }
-        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
+        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found", lst);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
@@ -145,10 +185,10 @@ public class CustController {
         log.info("inside controller findByFirstNameLike fn=" + fn);
         List<Customer> lst = customerService.findByFirstNameLike(fn);
         if (lst.isEmpty()) {
-            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found ");
+            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found");
             return new ResponseEntity<>(apiresponse, HttpStatus.NOT_FOUND);
         }
-        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
+        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found", lst);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
@@ -157,10 +197,10 @@ public class CustController {
         log.info("inside controller findByFirstNameContaining fn=" + fn);
         List<Customer> lst = customerService.findByFirstNameContaining(fn);
         if (lst.isEmpty()) {
-            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found ");
+            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found");
             return new ResponseEntity<>(apiresponse, HttpStatus.NOT_FOUND);
         }
-        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
+        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found", lst);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
@@ -169,10 +209,10 @@ public class CustController {
         log.info("inside controller findByfirstNameContains fn=" + fn);
         List<Customer> lst = customerService.findByfirstNameContains(fn);
         if (lst.isEmpty()) {
-            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found ");
+            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found");
             return new ResponseEntity<>(apiresponse, HttpStatus.NOT_FOUND);
         }
-        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
+        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found", lst);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
@@ -181,10 +221,10 @@ public class CustController {
         log.info("inside controller findByfirstNameIsContaining fn=" + fn);
         List<Customer> lst = customerService.findByfirstNameIsContaining(fn);
         if (lst.isEmpty()) {
-            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found ");
+            ApiResponse apiresponse = new ApiResponse(HttpStatus.NOT_FOUND.value(), "no customer found");
             return new ResponseEntity<>(apiresponse, HttpStatus.NOT_FOUND);
         }
-        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found ", lst);
+        ApiResponse apiresponse = new ApiResponse(HttpStatus.FOUND.value(), "customer found", lst);
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
@@ -202,7 +242,8 @@ public class CustController {
     public ResponseEntity<Resource> downloadTemplate() {
         Resource resource = new ClassPathResource("templates/sampletemp.xlsx");
         return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                .contentType(MediaType.parseMediaType(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                 .body(resource);
     }
 }

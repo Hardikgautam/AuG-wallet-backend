@@ -2,5 +2,5 @@ package com.prac_icsd2.enums;
 
 public enum SubscriptionType {
 
-	BASIC,ADVANCED,EXPIRED
+	BASIC,ADVANCED,EXPIRED, PREMIUM
 }
