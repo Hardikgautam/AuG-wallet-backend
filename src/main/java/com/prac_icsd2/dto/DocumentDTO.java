@@ -3,6 +3,7 @@ package com.prac_icsd2.dto;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prac_icsd2.enums.DocType;
 
 import jakarta.validation.constraints.NotBlank;
@@ -25,12 +26,13 @@ public class DocumentDTO {
     @NotNull(message="docName should not be null")
     private DocType docName;
     
-    @NotBlank(message="fileName should not be blank")
+    @NotBlank(message="filePath should not be blank")
     private String filePath;
     
     @NotBlank(message="fileName should not be blank")
     private String fileName;
     
+    @JsonIgnore
     private LocalDate uploadDate;
     
     @Builder.Default

@@ -45,14 +45,12 @@ public class AccountServiceImpl implements AccountService {
     private TransactionService transactionService;
 
     @Override
-    @Transactional // Added to ensure both Account and Transaction save or both roll back
-    
+    @Transactional 
     
     public int saveAccount(AccountRequestDTO accReq) {
         log.info("Creating a New Account and Initial Transaction");
 
         System.out.println("Inside saveaccount in accountservice implementation ................................................................................................");
-        // 1. Validate Customer
         Optional<Customer> optCust = customerRepo.findById(accReq.getCustomer().getCustomerId());
         if (optCust.isEmpty()) {
             throw new ResourceNotFoundException("Customer is not present in database with ID: " 
@@ -60,7 +58,6 @@ public class AccountServiceImpl implements AccountService {
         }
         Customer cust = optCust.get();
 
-        // 2. Build and Save Account
         Account account = Account.builder()
                 .accountType(accReq.getAccountType())
                 .customer(cust)
@@ -71,7 +68,6 @@ public class AccountServiceImpl implements AccountService {
 
         int accNumberCreated = accountRepo.save(account).getAccountnumber();
 
-        // 3. Create Initial Credit Transaction (The new style)
         TransactionModel tra = TransactionModel.builder()
                 .transactionType(TransactionType.CREDIT)
                 .transactiondate(LocalDate.now())

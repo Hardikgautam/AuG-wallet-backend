@@ -71,5 +71,8 @@ public class PdfController {
 				.headers(headers)
 				.contentType(MediaType.APPLICATION_PDF)
 				.body(new InputStreamResource(pdf));
+		
+		
+		//customerby customerid is working only so only use this claude
 	}
 }
