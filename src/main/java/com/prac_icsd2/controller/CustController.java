@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.prac_icsd2.aop.CheckRole;
+import com.prac_icsd2.aop.LogExecutionTime;
 import com.prac_icsd2.aop.TrackMethod;
 import com.prac_icsd2.dto.BulkUploadResultDTO;
 import com.prac_icsd2.dto.CustomerLoginDTO;
@@ -53,6 +55,8 @@ public class CustController {
     @Autowired
     CustomerRepo customerRepo;
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/create")
     public Customer createcustomer() {
         Address addr = Address.builder()
@@ -79,6 +83,8 @@ public class CustController {
         return c1;
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @PostMapping(value = "/create")
     public ResponseEntity<ApiResponse> createCustomer(@RequestBody @Valid CustomerRequestDto customerRequest) {
         log.info("inside create method of customer controller");
@@ -87,6 +93,8 @@ public class CustController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @PostMapping(value = "/isValidUser")
     public ResponseEntity<ApiResponse> isValidUser(@RequestBody @Valid CustomerLoginDTO customerLogin) {
         log.info("authenticating user - valid or not");
@@ -95,8 +103,9 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
-  
+    @LogExecutionTime
     @GetMapping("/all")
+    @CheckRole("USER")
     public ResponseEntity<ApiResponse> getAllCustomers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -120,6 +129,8 @@ public class CustController {
     }
 
     @TrackMethod
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping("/getById/{id}")
     public ResponseEntity<ApiResponse> getCustomerById(@PathVariable Integer id) {
         log.info("getCustomerById id={}", id);
@@ -129,6 +140,8 @@ public class CustController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @PutMapping("/update/{id}")
     public ResponseEntity<ApiResponse> updateCustomer(
             @PathVariable Integer id,
@@ -144,7 +157,9 @@ public class CustController {
         ApiResponse apiResponse = new ApiResponse(HttpStatus.OK.value(), "Customer updated successfully");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
-
+    
+    @LogExecutionTime
+    @CheckRole("ADMIN")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteCustomer(@PathVariable Integer id) {
         log.info("deleteCustomer id={}", id);
@@ -156,6 +171,8 @@ public class CustController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/get/findByLastName/{lnm}")
     public ResponseEntity<ApiResponse> findByLastNameDTOResponse(@PathVariable String lnm) {
         log.info("inside controller findByLastName lnm=" + lnm);
@@ -168,6 +185,8 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/get/findByFirstNameIgnoreCase/{fn}")
     public ResponseEntity<ApiResponse> findByFirstNameIgnoreCase(@PathVariable String fn) {
         log.info("inside controller findByFirstNameIgnoreCase fn=" + fn);
@@ -180,6 +199,8 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/get/findByFirstNameLike/{fn}")
     public ResponseEntity<ApiResponse> findByFirstNameLike(@PathVariable String fn) {
         log.info("inside controller findByFirstNameLike fn=" + fn);
@@ -192,6 +213,8 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/get/findByFirstNameContaining/{fn}")
     public ResponseEntity<ApiResponse> findByFirstNameContaining(@PathVariable String fn) {
         log.info("inside controller findByFirstNameContaining fn=" + fn);
@@ -204,6 +227,8 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/get/findByfirstNameContains/{fn}")
     public ResponseEntity<ApiResponse> findByfirstNameContains(@PathVariable String fn) {
         log.info("inside controller findByfirstNameContains fn=" + fn);
@@ -216,6 +241,8 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping(value = "/get/findByfirstNameIsContaining/{fn}")
     public ResponseEntity<ApiResponse> findByfirstNameIsContaining(@PathVariable String fn) {
         log.info("inside controller findByfirstNameIsContaining fn=" + fn);
@@ -228,6 +255,8 @@ public class CustController {
         return new ResponseEntity<>(apiresponse, HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("ADMIN")
     @PostMapping(value = "/bulk-upload", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse> bulkUpload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty() || !file.getOriginalFilename().endsWith(".xlsx")) {
@@ -238,6 +267,8 @@ public class CustController {
         return new ResponseEntity<>(new ApiResponse(200, msg, result), HttpStatus.OK);
     }
 
+    @LogExecutionTime
+    @CheckRole("USER")
     @GetMapping("/download-template")
     public ResponseEntity<Resource> downloadTemplate() {
         Resource resource = new ClassPathResource("templates/sampletemp.xlsx");
