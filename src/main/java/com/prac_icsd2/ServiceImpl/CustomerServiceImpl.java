@@ -23,6 +23,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.prac_icsd2.aop.AutoCache;
+import com.prac_icsd2.aop.CollectMetrics;
+import com.prac_icsd2.aop.LogServiceCall;
+import com.prac_icsd2.aop.TrackTransaction;
 import com.prac_icsd2.dto.BulkUploadResultDTO;
 import com.prac_icsd2.dto.CustomerLoginDTO;
 import com.prac_icsd2.dto.CustomerRequestDto;
@@ -48,6 +52,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
+@LogServiceCall
+@CollectMetrics
 public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
@@ -97,6 +103,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @LogServiceCall
     public Customer getCustomerByCustId(String strCustId) {
         int id = Integer.parseInt(strCustId);
         return customerRepo.findById(id)
@@ -104,6 +111,7 @@ public class CustomerServiceImpl implements CustomerService {
                         "Customer not found for id: " + strCustId));
     }
 
+    @TrackTransaction
     @Override
     public Integer createCustomer(@Valid CustomerRequestDto crDto) {
         log.info("Inside createCustomer of service: {}", crDto);
@@ -155,6 +163,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @AutoCache(ttl = 30)
     public Page<CustomerPageResponseDTO> getAllCustomers(
             int page, int size, String sortBy, String sortDir, String search) {
 
@@ -204,6 +213,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @AutoCache(ttl = 120)
     public Customer getCustomerByEmailId(String strEmailId) {
         return customerRepo.findByEmailId(strEmailId)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -273,6 +283,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
+    @TrackTransaction
+
     public BulkUploadResultDTO bulkCreateCustomers(MultipartFile file) {
         List<Object[]> dbIdentifiers = customerRepo.findAllUniqueIdentifiers();
         Set<String> dbEmails   = new HashSet<>();

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.prac_icsd2.aop.LogExecutionTime;
 import com.prac_icsd2.dto.AccountRequestDTO;
 import com.prac_icsd2.dto.common.ApiResponse;
 import com.prac_icsd2.enums.AccountType;
@@ -44,7 +45,7 @@ public class AccountController {
 	//public Account saveAccount(Account acc)
 	
 	
-	
+	@LogExecutionTime
 	@PostMapping(value="/create")
 	public ResponseEntity<ApiResponse> createAccount(@Valid @RequestBody  AccountRequestDTO accountRequest)
 	{
@@ -57,6 +58,7 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apiresponse,HttpStatus.OK);
 	}
 	
+	@LogExecutionTime
 	@GetMapping(value="/get/{customerId}")
 	public ResponseEntity<ApiResponse> getAllAccountsByCustomerId(@PathVariable int customerId) throws Exception
 	{
@@ -77,7 +79,9 @@ public class AccountController {
 	
 	
 	//query= iski naming convention kya hogi
+	
 	//query- @valid not working for path variable - how it will work - not blank is not working 
+	@LogExecutionTime
 	@GetMapping(value="/getAccountsByEmailId/{emailId}")
 	//https://www.baeldung.com/spring-validate-requestparam-pathvariable
 	public ResponseEntity<ApiResponse> getAllAccountsByCustomerEmailId(@PathVariable @Valid @NotBlank(message = "emailId name should not be blank")
@@ -104,6 +108,7 @@ public class AccountController {
 	
 	
 	//******************************************************************
+	@LogExecutionTime
 	@GetMapping(value="/findByAccountTypeIn")
 	public ResponseEntity<ApiResponse> findByAccountTypeIn()
 	{
@@ -117,6 +122,7 @@ public class AccountController {
 				return new ResponseEntity<ApiResponse>(apirespnose,HttpStatus.OK);
 	}
 	
+	@LogExecutionTime
 	@GetMapping(value="/findByOpeningBalanceNot/{opBal}")
 	public ResponseEntity<ApiResponse> findByOpeningBalanceNot(@PathVariable double opBal)
 	{
@@ -126,6 +132,7 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apirespnose,HttpStatus.OK);
 	}
 	
+	@LogExecutionTime
 	@GetMapping(value="/findByOrderByOpeningBalanceAsc")
 	public ResponseEntity<ApiResponse> findByOrderByOpeningBalanceAsc()
 	{
@@ -133,6 +140,8 @@ public class AccountController {
 		ApiResponse apirespnose=new ApiResponse(HttpStatus.OK.value(), "list of accounts",lst);
 		return new ResponseEntity<ApiResponse>(apirespnose,HttpStatus.OK);
 	}
+	
+	@LogExecutionTime
 	@GetMapping(value="/findByOpeningDateAfter")
 	public ResponseEntity<ApiResponse> findByOpeningDateAfter()
 	{
@@ -142,6 +151,9 @@ public class AccountController {
 		ApiResponse apirespnose=new ApiResponse(HttpStatus.OK.value(), "list of accounts",lst);
 		return new ResponseEntity<ApiResponse>(apirespnose,HttpStatus.OK);
 	}
+	
+	
+	@LogExecutionTime
 	@GetMapping(value="/findByOpeningDateBetween")
 	public ResponseEntity<ApiResponse> findByOpeningDateBetween()
 	{
@@ -153,7 +165,7 @@ public class AccountController {
 	}
 	
 	
-	
+	@LogExecutionTime
 	@GetMapping(value="/getAccLesThanOpBal/{opBal}")
 	public ResponseEntity<ApiResponse> getAllAccountsLessThanOpeningBalance(@PathVariable double opBal) throws Exception
 	{
@@ -172,7 +184,7 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apirsponse,HttpStatus.OK);
 	}
 	
-	
+	@LogExecutionTime
 	@GetMapping(value="/get/AccLesThanEqualOpBal/{opBal}")
 	public ResponseEntity<ApiResponse> getAllAccountsLessThanEqualOpeningBalance(@PathVariable double opBal) throws Exception
 	{
@@ -191,6 +203,9 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apirsponse,HttpStatus.OK);
 	
 	}
+	
+	
+	@LogExecutionTime
 	@GetMapping(value="/get/findByOpeningBalanceGreaterThan/{opBal}")
 	public ResponseEntity<ApiResponse> findByOpeningBalanceGreaterThan(@PathVariable double opBal) throws Exception
 	{
@@ -209,6 +224,9 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apirsponse,HttpStatus.OK);
 	
 	}
+	
+	
+	@LogExecutionTime
 	@GetMapping(value="/get/findDistinctByAccountTypeAndOpeningBalance/{accType}/{opBal}")
 	public ResponseEntity<ApiResponse> findDistinctByAccountTypeAndOpeningBalance(@PathVariable double opBal,@PathVariable String accType) throws Exception
 	{
@@ -235,6 +253,8 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apiresponse,HttpStatus.OK);
 	}
 
+	
+	@LogExecutionTime
 	@GetMapping(value="/get/getDistinctAccType")
 	public ResponseEntity<ApiResponse> getDistinctAccType() throws Exception
 	{
@@ -252,6 +272,7 @@ public class AccountController {
 		return new ResponseEntity<ApiResponse>(apiresponse,HttpStatus.OK);
 	}
 
+	@LogExecutionTime
 	@GetMapping(value="/get/findDistinctByOpeningBalance/{opBal}")
 	public ResponseEntity<ApiResponse> findDistinctByOpeningBalance(@PathVariable double opBal) throws Exception
 	{
